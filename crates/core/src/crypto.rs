@@ -1,12 +1,18 @@
 use crate::error::Result;
+use hkdf::Hkdf;
+use sha2::Sha256;
+use aes_gcm::{Aes256Gcm, KeyInit, aead::{Aead, Payload}};
 use zeroize::Zeroize;
 
 pub struct Crypto;
 
 impl Crypto {
-    pub fn derive_key(password: &[u8], _salt: &[u8]) -> Result<Vec<u8>> {
-        let key = blake3::derive_key("librepods", password);
-        Ok(key.to_vec())
+    pub fn derive_key(password: &[u8], salt: &[u8]) -> Result<Vec<u8>> {
+        let hk = Hkdf::<Sha256>::new(Some(salt), password);
+        let mut okm = [0u8; 32];
+        hk.expand(b"librepods-v1.0.0", &mut okm)
+            .map_err(|_| crate::error::Error::CryptoError)?;
+        Ok(okm.to_vec())
     }
 
     pub fn hash(data: &[u8]) -> Vec<u8> {
@@ -15,24 +21,47 @@ impl Crypto {
 
     pub fn verify_hash(data: &[u8], hash: &[u8]) -> bool {
         let calculated = Self::hash(data);
-        calculated == hash
+        constant_time_eq(&calculated, hash)
     }
 
-    pub fn encrypt(key: &[u8], plaintext: &[u8], _nonce: &[u8]) -> Result<Vec<u8>> {
-        let mut result = vec![0u8; plaintext.len()];
-        for (i, byte) in plaintext.iter().enumerate() {
-            result[i] = byte ^ key[i % key.len()];
+    pub fn encrypt(key: &[u8], plaintext: &[u8], nonce: &[u8]) -> Result<Vec<u8>> {
+        if key.len() != 32 {
+            return Err(crate::error::Error::CryptoError);
         }
-        Ok(result)
+        if nonce.len() != 12 {
+            return Err(crate::error::Error::CryptoError);
+        }
+        let cipher = Aes256Gcm::new_from_slice(key)
+            .map_err(|_| crate::error::Error::CryptoError)?;
+        let nonce_arr = aes_gcm::Nonce::from_slice(nonce);
+        cipher.encrypt(nonce_arr, Payload::from(plaintext))
+            .map_err(|_| crate::error::Error::CryptoError)
     }
 
-    pub fn decrypt(key: &[u8], ciphertext: &[u8], _nonce: &[u8]) -> Result<Vec<u8>> {
-        let mut result = vec![0u8; ciphertext.len()];
-        for (i, byte) in ciphertext.iter().enumerate() {
-            result[i] = byte ^ key[i % key.len()];
+    pub fn decrypt(key: &[u8], ciphertext: &[u8], nonce: &[u8]) -> Result<Vec<u8>> {
+        if key.len() != 32 {
+            return Err(crate::error::Error::CryptoError);
         }
-        Ok(result)
+        if nonce.len() != 12 {
+            return Err(crate::error::Error::CryptoError);
+        }
+        let cipher = Aes256Gcm::new_from_slice(key)
+            .map_err(|_| crate::error::Error::CryptoError)?;
+        let nonce_arr = aes_gcm::Nonce::from_slice(nonce);
+        cipher.decrypt(nonce_arr, Payload::from(ciphertext))
+            .map_err(|_| crate::error::Error::CryptoError)
     }
+}
+
+fn constant_time_eq(a: &[u8], b: &[u8]) -> bool {
+    if a.len() != b.len() {
+        return false;
+    }
+    let mut result = 0u8;
+    for (x, y) in a.iter().zip(b.iter()) {
+        result |= x ^ y;
+    }
+    result == 0
 }
 
 pub struct SecureKey {

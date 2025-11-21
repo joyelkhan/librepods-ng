@@ -38,6 +38,7 @@ pub mod coverage_analyzer;
 pub mod release_manager;
 pub mod sbom_generator;
 pub mod release_notes;
+pub mod security;
 
 pub use error::{Error, Result};
 pub use device::{Device, DeviceModel, DeviceCapability};

@@ -1,0 +1,55 @@
+//! WinRT backend for Windows
+
+#[cfg(target_os = "windows")]
+use crate::bluetooth::BluetoothBackend;
+use crate::error::Result;
+
+#[cfg(target_os = "windows")]
+pub struct WinRTBackend;
+
+#[cfg(target_os = "windows")]
+impl BluetoothBackend for WinRTBackend {
+    fn start_scan(&mut self) -> Result<()> {
+        Ok(())
+    }
+
+    fn stop_scan(&mut self) -> Result<()> {
+        Ok(())
+    }
+
+    fn connect(&mut self, _address: &str) -> Result<()> {
+        Ok(())
+    }
+
+    fn disconnect(&mut self, _address: &str) -> Result<()> {
+        Ok(())
+    }
+
+    fn write_characteristic(
+        &mut self,
+        _address: &str,
+        _service_uuid: u128,
+        _char_uuid: u128,
+        _data: &[u8],
+    ) -> Result<()> {
+        Ok(())
+    }
+
+    fn read_characteristic(
+        &mut self,
+        _address: &str,
+        _service_uuid: u128,
+        _char_uuid: u128,
+    ) -> Result<Vec<u8>> {
+        Ok(Vec::new())
+    }
+
+    fn enable_notifications(
+        &mut self,
+        _address: &str,
+        _service_uuid: u128,
+        _char_uuid: u128,
+    ) -> Result<()> {
+        Ok(())
+    }
+}

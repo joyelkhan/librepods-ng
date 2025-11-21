@@ -1,0 +1,28 @@
+[package]
+name = "librepods-ffi"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+librepods-core = { path = "../core" }
+serde = { workspace = true }
+tokio = { workspace = true }
+thiserror = { workspace = true }
+log = { workspace = true }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+winapi = { version = "0.3", features = ["winnt"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc = "0.2"
+objc-foundation = "0.1"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+dbus = "0.9"
+
+[lib]
+name = "librepods_ffi"
+path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]

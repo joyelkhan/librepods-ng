@@ -1,0 +1,12 @@
+{
+  "@@locale": "zh",
+  "appTitle": "LibrePods NG",
+  "scanButton": "扫描",
+  "scanning": "正在扫描...",
+  "deviceConnected": "设备已连接",
+  "batteryLow": "电池电量低",
+  "ancMode": "ANC 模式",
+  "battery": "电池",
+  "close": "关闭",
+  "devices": "设备"
+}

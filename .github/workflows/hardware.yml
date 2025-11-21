@@ -1,0 +1,21 @@
+name: Hardware Tests
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  hardware:
+    runs-on: ubuntu-latest
+    if: github.repository == 'joyelkhan/librepods-ng'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run hardware tests
+        run: LIBREPODS_HARDWARE_TEST=1 cargo test --test hardware_test --all-features
+        continue-on-error: true
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: hardware-test-results
+          path: target/test-results/

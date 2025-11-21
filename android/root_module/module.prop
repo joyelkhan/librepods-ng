@@ -1,0 +1,7 @@
+id=librepods_ng
+name=LibrePods NG
+version=v1.0.0
+versionCode=100
+author=Rivers Engineering
+description=Unlock AirPods features on non-Apple devices
+updateJson=https://github.com/joyelkhan/librepods-ng/releases/latest/download/magisk.json

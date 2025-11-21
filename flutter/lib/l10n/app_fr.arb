@@ -1,0 +1,12 @@
+{
+  "@@locale": "fr",
+  "appTitle": "LibrePods NG",
+  "scanButton": "Analyser",
+  "scanning": "Analyse en cours...",
+  "deviceConnected": "Appareil connecté",
+  "batteryLow": "Batterie faible",
+  "ancMode": "Mode ANC",
+  "battery": "Batterie",
+  "close": "Fermer",
+  "devices": "Appareils"
+}

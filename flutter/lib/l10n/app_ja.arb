@@ -1,0 +1,12 @@
+{
+  "@@locale": "ja",
+  "appTitle": "LibrePods NG",
+  "scanButton": "スキャン",
+  "scanning": "スキャン中...",
+  "deviceConnected": "デバイスが接続されました",
+  "batteryLow": "バッテリー低下",
+  "ancMode": "ANCモード",
+  "battery": "バッテリー",
+  "close": "閉じる",
+  "devices": "デバイス"
+}

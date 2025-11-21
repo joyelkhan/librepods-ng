@@ -1,0 +1,26 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build release
+        run: cargo build --release --all-features
+      - name: Create checksums
+        run: |
+          sha256sum target/release/librepods > librepods.sha256
+          sha256sum target/release/librepods-cli > librepods-cli.sha256
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            target/release/librepods
+            target/release/librepods-cli
+            librepods.sha256
+            librepods-cli.sha256

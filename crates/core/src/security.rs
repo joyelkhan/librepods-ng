@@ -1,4 +1,3 @@
-use std::collections::HashSet;
 use zeroize::Zeroize;
 
 pub struct ReplayWindow {
@@ -18,18 +17,22 @@ impl ReplayWindow {
         if nonce <= self.last_nonce.saturating_sub(128) {
             return false;
         }
-        if nonce == self.last_nonce {
-            return false;
-        }
-        let bit = (nonce & 127) as usize;
-        let mask = 1u128 << bit;
         if nonce > self.last_nonce {
-            self.window <<= (nonce - self.last_nonce) as usize;
+            let diff = (nonce - self.last_nonce) as usize;
+            if diff < 128 {
+                self.window <<= diff;
+            } else {
+                self.window = 0;
+            }
             self.last_nonce = nonce;
         }
-        let old = (self.window & mask) != 0;
+        let bit = ((self.last_nonce - nonce) & 127) as usize;
+        let mask = 1u128 << bit;
+        if (self.window & mask) != 0 {
+            return false;
+        }
         self.window |= mask;
-        !old
+        true
     }
 }
 

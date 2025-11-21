@@ -1,6 +1,5 @@
 use clap::{Parser, Subcommand};
 use librepods_core::*;
-use std::io;
 
 #[derive(Parser)]
 #[command(name = "librepods")]
@@ -25,7 +24,7 @@ enum Commands {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
 
     match cli.command {
